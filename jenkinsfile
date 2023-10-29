@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    tools{
+      jdk 'jdk17'
+      node 'node16'
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/SandeepNainala/Netflix-clone-DevSecOps.git'
+            }
+        }
+        stage('sonarqube analysis') {
+            withSonarQubeEnv(credentialsId: 'sonar-token') {
+                sonar-scanner \
+                  -Dsonar.projectKey=Netflix \
+                  -Dsonar.sources=. \
+                  -Dsonar.host.url=http://54.174.214.164:9000 \
+                  -Dsonar.login=sqp_eda29b76e5d85681b55c465e1b2d8d328b7a69ae
+            }
+        }
+    }
+}
