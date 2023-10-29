@@ -26,10 +26,10 @@ pipeline{
                 }
             }
         }
-        stage("Quality gate"){
+        stage("quality gate"){
            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
                 }
             }
         }
@@ -40,29 +40,30 @@ pipeline{
         }
         stage('OWASP FS SCAN') {
             steps {
-               dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-               dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        stage('Trivy FS SCAN') {
+        stage('TRIVY FS SCAN') {
             steps {
-               sh "trivy fs . > trivyfs.txt"
+                sh "trivy fs . > trivyfs.txt"
             }
         }
-        stage('Docker Build&Push') {
-            steps {
-               script {
-                  withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                     sh "docker build --build-arg TMDB_V3_API_KEY=def091ea183d262425d7b9ad654e3caa -t netflix ."
-                     sh "docker tag netflix sandeepnainala9/netflix:v1 "
-                     sh "docker push sandeepnainala9/netflix:v1 "
-               }
+        stage("Docker Build & Push"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                       sh "docker build --build-arg TMDB_V3_API_KEY=def091ea183d262425d7b9ad654e3caa -t netflix ."
+                       sh "docker tag netflix sandeepnainala9/netflix:v1 "
+                       sh "docker push sandeepanainala9/netflix:v1 "
+                    }
+                }
             }
         }
-        stage('Trivy FS SCAN') {
-           steps {
-              sh "trivy image sandeepnainala9/netflix:v1 > trivyimage.txt"
-           }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image sandeepnainala9/netflix:v1 > trivyimage.txt"
+            }
         }
     }
     post {
@@ -72,9 +73,8 @@ pipeline{
             body: "Project: ${env.JOB_NAME}<br/>" +
                 "Build Number: ${env.BUILD_NUMBER}<br/>" +
                 "URL: ${env.BUILD_URL}<br/>",
-            to: 'postbox.aj99@gmail.com',
+            to: 'sandeepanainala@gmail.com',
             attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
         }
     }
- }
 }
