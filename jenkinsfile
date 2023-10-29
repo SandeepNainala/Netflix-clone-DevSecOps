@@ -65,6 +65,11 @@ pipeline{
                 sh "trivy image sandeepnainala9/netflix:latest > trivyimage.txt"
             }
         }
+        stage('Deploy to container'){
+            steps{
+                sh 'docker run -d --name netflix -p 8081:80 sandeepnainala9/netflix:latest'
+            }
+        }
     }
     post {
      always {
