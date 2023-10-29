@@ -26,4 +26,28 @@ pipeline{
                 }
             }
         }
+        stage('quality gate'){
+           steps{
+              script {
+                 waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+              }
+           }
+        }
+        stage('Install dependencies'){
+           steps{
+              sh "npm install"
+           }
+        }
+    }
+    post {
+         always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'nainalasandeep@gmail.com',  #change Your mail
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+            }
+        }
     }
