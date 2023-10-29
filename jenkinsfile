@@ -4,6 +4,15 @@ pipeline {
       jdk 'jdk17'
       node 'node16'
     }
+    environment {
+           SCANNER_HOME=tool 'sonar-scanner'
+    }
+    stages {
+       stage('clean workspace') {
+          steps {
+             cleanWs()
+          }
+       }
 
     stages {
         stage('checkout') {
@@ -13,11 +22,8 @@ pipeline {
         }
         stage('sonarqube analysis') {
             withSonarQubeEnv(credentialsId: 'sonar-token') {
-                sonar-scanner \
-                  -Dsonar.projectKey=Netflix \
-                  -Dsonar.sources=. \
-                  -Dsonar.host.url=http://54.174.214.164:9000 \
-                  -Dsonar.login=sqp_eda29b76e5d85681b55c465e1b2d8d328b7a69ae
+                sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                                    -Dsonar.projectKey=Netflix '''
             }
         }
     }
