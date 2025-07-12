@@ -103,9 +103,9 @@ pipeline{
                         restrictKubeConfigAccess: false,
                         serverUrl: ''
                     ) {
-                        sh 'kubectl apply -f deployment.yml'
-                        sh 'kubectl apply -f service.yml'
-                        sh 'kubectl apply -f node-service.yml'
+                        sh 'kubectl apply -f Kubernetes/deployment.yml'
+                        sh 'kubectl apply -f Kubernetes/service.yml'
+                        sh 'kubectl apply -f Kubernetes/node-service.yml'
                     }
                 }
             }
