@@ -12,8 +12,8 @@ pipeline{
     }
     options {
         ansiColor('xterm')
+        timeout(time: 1, unit: 'HOURS')
     }
-
     stages {
         stage('clean workspace'){
             steps{
